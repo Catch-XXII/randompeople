@@ -4,32 +4,32 @@
 
 int main() {
     sqlite3 *db;
-    int rc;
+    int result_code;
 
     // Opening the database
-    rc = sqlite3_open("example.db", &db);
-    if (rc) {
+    result_code = sqlite3_open("example.db", &db);
+    if (result_code) {
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     // Creating tables
-    rc = createTables(db);
-    if (rc != SQLITE_OK) {
+    result_code = createTables(db);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Table creation failed\n");
-        return rc;
+        return result_code;
     }
 
     // Adding random data
-    rc = insertRandomData(db, 100);
-    if (rc != SQLITE_OK) {
+    result_code = insertRandomData(db, 100);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Data insertion failed\n");
-        return rc;
+        return result_code;
     }
 
     printf("Data inserted successfully\n");
 
     // Close the database
     sqlite3_close(db);
-    return rc;
+    return result_code;
 }

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # Prerequisites
 *.d
 
@@ -55,4 +53,5 @@ dkms.conf
 
 # IDE files
 .vscode/
->>>>>>> f06a0e8 (vscode folder was added to gitignore)
+*.db
+my_program
