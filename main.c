@@ -21,7 +21,7 @@ int main() {
     }
 
     // Adding random data
-    result_code = insertRandomData(db, 100);
+    result_code = insertRandomData(db, 10000);
     if (result_code != SQLITE_OK) {
         fprintf(stderr, "Data insertion failed\n");
         return result_code;

@@ -50,14 +50,14 @@ int calculateAge(const char *birthDate);
 #define VODAFONE_COUNT (sizeof(vodafoneCodes) / sizeof(vodafoneCodes[0]))
 
 // Define a macro for error checking
-#define CHECK_ERR(rc, msg) if (rc != SQLITE_OK && rc != SQLITE_DONE) { fprintf(stderr, "%s: %s\n", msg, sqlite3_errmsg(db)); return rc; }
+#define CHECK_ERR(result_code, msg) if (result_code != SQLITE_OK && result_code != SQLITE_DONE) { fprintf(stderr, "%s: %s\n", msg, sqlite3_errmsg(db)); return result_code; }
 
 
 
 // This function creates tables in the database
 int createTables(sqlite3 *db) {
     char *errMsg = 0;
-    int rc;
+    int result_code;
 
     const char *sqlCreatePerson = "CREATE TABLE IF NOT EXISTS Person ("
                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -67,10 +67,10 @@ int createTables(sqlite3 *db) {
                                   "email TEXT NOT NULL,"
                                   "phone_number TEXT NOT NULL,"
                                   "age INTEGER);";
-    rc = sqlite3_exec(db, sqlCreatePerson, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlCreatePerson, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to create Person table: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     const char *sqlCreateAddress = "CREATE TABLE IF NOT EXISTS Address ("
@@ -81,10 +81,10 @@ int createTables(sqlite3 *db) {
                                    "postal_code TEXT NOT NULL,"
                                    "FOREIGN KEY(person_id) REFERENCES Person(id),"
                                    "FOREIGN KEY(city_id) REFERENCES City(id));";
-    rc = sqlite3_exec(db, sqlCreateAddress, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlCreateAddress, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to create Address table: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     const char *sqlCreateCity = "CREATE TABLE IF NOT EXISTS City ("
@@ -92,20 +92,20 @@ int createTables(sqlite3 *db) {
                                 "name TEXT NOT NULL,"
                                 "country_id INTEGER,"
                                 "FOREIGN KEY(country_id) REFERENCES Country(id));";
-    rc = sqlite3_exec(db, sqlCreateCity, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlCreateCity, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to create City table: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     const char *sqlCreateCountry = "CREATE TABLE IF NOT EXISTS Country ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                    "name TEXT NOT NULL,"
                                    "code TEXT NOT NULL);";
-    rc = sqlite3_exec(db, sqlCreateCountry, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlCreateCountry, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to create Country table: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     return SQLITE_OK;
@@ -173,23 +173,23 @@ int calculateAge(const char *birthDate) {
 
 int updateAgeColumn(sqlite3 *db) {
     char *errMsg = 0;
-    int rc;
+    int result_code;
 
     // Adding an age column
     const char *sqlAddAgeColumn = "ALTER TABLE Person ADD COLUMN age INTEGER;";
-    rc = sqlite3_exec(db, sqlAddAgeColumn, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlAddAgeColumn, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to add age column: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     // Update ages
     const char *sqlUpdateAge = "UPDATE Person SET age = (strftime('%Y', 'now') - strftime('%Y', birth_date)) - "
                                "(strftime('%m-%d', 'now') < strftime('%m-%d', birth_date));";
-    rc = sqlite3_exec(db, sqlUpdateAge, 0, 0, &errMsg);
-    if (rc != SQLITE_OK) {
+    result_code = sqlite3_exec(db, sqlUpdateAge, 0, 0, &errMsg);
+    if (result_code != SQLITE_OK) {
         fprintf(stderr, "Failed to update age column: %s\n", sqlite3_errmsg(db));
-        return rc;
+        return result_code;
     }
 
     return SQLITE_OK;
@@ -233,30 +233,30 @@ char* getRandomPhoneNumber() {
 int insertRandomData(sqlite3 *db, int personCount) {
     sqlite3_stmt *stmt;
     char *errMsg = 0;
-    int rc;
+    int result_code;
 
     srand(time(NULL)); // Initialize random number generator
 
     // Add random country
     for (int i = 0; i < COUNTRY_COUNT; i++) {
         const char *sqlInsertCountry = "INSERT INTO Country (name, code) VALUES (?, ?);";
-        rc = sqlite3_prepare_v2(db, sqlInsertCountry, -1, &stmt, 0);
-        CHECK_ERR(rc, "Failed to prepare Country insert statement");
+        result_code = sqlite3_prepare_v2(db, sqlInsertCountry, -1, &stmt, 0);
+        CHECK_ERR(result_code, "Failed to prepare Country insert statement");
         sqlite3_bind_text(stmt, 1, countries[i], -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, countryCodes[i], -1, SQLITE_STATIC);
-        rc = sqlite3_step(stmt);
-        CHECK_ERR(rc, "Failed to insert into Country");
+        result_code = sqlite3_step(stmt);
+        CHECK_ERR(result_code, "Failed to insert into Country");
         sqlite3_finalize(stmt);
     }
 
     // Add random city
     for (int i = 0; i < CITY_COUNT; i++) {
         const char *sqlInsertCity = "INSERT INTO City (name, country_id) VALUES (?, 1);"; // Türkiye'yi varsayılan olarak kullanıyoruz
-        rc = sqlite3_prepare_v2(db, sqlInsertCity, -1, &stmt, 0);
-        CHECK_ERR(rc, "Failed to prepare City insert statement");
+        result_code = sqlite3_prepare_v2(db, sqlInsertCity, -1, &stmt, 0);
+        CHECK_ERR(result_code, "Failed to prepare City insert statement");
         sqlite3_bind_text(stmt, 1, cities[i], -1, SQLITE_STATIC);
-        rc = sqlite3_step(stmt);
-        CHECK_ERR(rc, "Failed to insert into City");
+        result_code = sqlite3_step(stmt);
+        CHECK_ERR(result_code, "Failed to insert into City");
         sqlite3_finalize(stmt);
     }
 
@@ -273,16 +273,16 @@ int insertRandomData(sqlite3 *db, int personCount) {
         int age = calculateAge(birthDate);
 
         const char *sqlInsertPerson = "INSERT INTO Person (first_name, last_name, birth_date, email, phone_number, age) VALUES (?, ?, ?, ?, ?, ?);";
-        rc = sqlite3_prepare_v2(db, sqlInsertPerson, -1, &stmt, 0);
-        CHECK_ERR(rc, "Failed to prepare Person insert statement");
+        result_code = sqlite3_prepare_v2(db, sqlInsertPerson, -1, &stmt, 0);
+        CHECK_ERR(result_code, "Failed to prepare Person insert statement");
         sqlite3_bind_text(stmt, 1, firstName, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, lastName, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, birthDate, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 4, email, -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 5, phoneNumber, -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, 6, age); // Yaşı bind et
-        rc = sqlite3_step(stmt);
-        CHECK_ERR(rc, "Failed to insert into Person");
+        result_code = sqlite3_step(stmt);
+        CHECK_ERR(result_code, "Failed to insert into Person");
         sqlite3_finalize(stmt);
     }
 
@@ -292,12 +292,12 @@ int insertRandomData(sqlite3 *db, int personCount) {
         const char *city = getRandomCity();
 
         const char *sqlInsertAddress = "INSERT INTO Address (person_id, street, city_id, postal_code) VALUES (?, ?, 1, '12345');";
-        rc = sqlite3_prepare_v2(db, sqlInsertAddress, -1, &stmt, 0);
-        CHECK_ERR(rc, "Failed to prepare Address insert statement");
+        result_code = sqlite3_prepare_v2(db, sqlInsertAddress, -1, &stmt, 0);
+        CHECK_ERR(result_code, "Failed to prepare Address insert statement");
         sqlite3_bind_int(stmt, 1, i + 1);
         sqlite3_bind_text(stmt, 2, street, -1, SQLITE_STATIC);
-        rc = sqlite3_step(stmt);
-        CHECK_ERR(rc, "Failed to insert into Address");
+        result_code = sqlite3_step(stmt);
+        CHECK_ERR(result_code, "Failed to insert into Address");
         sqlite3_finalize(stmt);
     }
 
