@@ -14,6 +14,7 @@ char *countryCodes[] = {"TR", "US", "DE", "FR", "UK"};
 #define CITY_COUNT (sizeof(cities) / sizeof(cities[0]))
 #define COUNTRY_COUNT (sizeof(countries) / sizeof(countries[0]))
 
+
 // This function creates tables in the database
 int createTables(sqlite3 *db) {
     char *errMsg = 0;
