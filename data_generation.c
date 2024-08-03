@@ -4,11 +4,7 @@
 #include <time.h>
 #include "database.h"
 
-
-
-
-
-// Global değişkenlerin tanımları
+// Global variables definitions
 char *firstNames[] = {"Ahmet", "Mehmet", "Ayşe", "Fatma", "Ali", "Hasan", "Hüseyin", "Zeynep", "Emine", "Mustafa"};
 char *lastNames[] = {"Yılmaz", "Kaya", "Demir", "Şahin", "Çelik", "Öztürk", "Arslan", "Doğan", "Korkmaz", "Özdemir"};
 char *streets[] = {"Atatürk Cad.", "Cumhuriyet Cad.", "İstiklal Cad.", "Bağdat Cad.", "Barbaros Bulv."};
@@ -19,7 +15,7 @@ const char *turkTelekomCodes[] = {"501", "505", "506", "507", "551", "552", "553
 const char *turkcellCodes[] = {"516", "530", "531", "532", "533", "534", "535", "536", "537", "538", "539", "561"};
 const char *vodafoneCodes[] = {"540", "541", "542", "543", "544", "545", "546", "547", "548", "549"};
 
-// Global değişkenlerin bildirimleri
+// Global variables declaration
 extern char *firstNames[];
 extern char *lastNames[];
 extern char *streets[];
@@ -52,14 +48,13 @@ int calculateAge(const char *birthDate);
 #define TURK_TELEKOM_COUNT (sizeof(turkTelekomCodes) / sizeof(turkTelekomCodes[0]))
 #define TURKCELL_COUNT (sizeof(turkcellCodes) / sizeof(turkcellCodes[0]))
 #define VODAFONE_COUNT (sizeof(vodafoneCodes) / sizeof(vodafoneCodes[0]))
-// Hata kontrolü için bir makro tanımlayalım
+
+// Define a macro for error checking
 #define CHECK_ERR(rc, msg) if (rc != SQLITE_OK && rc != SQLITE_DONE) { fprintf(stderr, "%s: %s\n", msg, sqlite3_errmsg(db)); return rc; }
 
 
-// Fonksiyonların tanımları burada olacak
-// (createTables, insertRandomData, getRandomFirstName, vs.)
 
-// Bu fonksiyon, veritabanında tabloları oluşturur
+// This function creates tables in the database
 int createTables(sqlite3 *db) {
     char *errMsg = 0;
     int rc;
@@ -116,34 +111,34 @@ int createTables(sqlite3 *db) {
     return SQLITE_OK;
 }
 
-// Rastgele bir isim seçme
+// Pick a random firstName
 const char* getRandomFirstName() {
     return firstNames[rand() % FIRST_NAME_COUNT];
 }
 
-// Rastgele bir soyisim seçme
+// Pick a random lastName
 const char* getRandomLastName() {
     return lastNames[rand() % LAST_NAME_COUNT];
 }
 
-// Rastgele bir cadde seçme
+// Pick a random street
 const char* getRandomStreet() {
     return streets[rand() % STREET_COUNT];
 }
 
-// Rastgele bir şehir seçme
+// Pick a random city
 const char* getRandomCity() {
     return cities[rand() % CITY_COUNT];
 }
 
-// Rastgele bir ülke ve kodunu seçme
+// Pick a random country and country code
 void getRandomCountry(char** name, char** code) {
     int index = rand() % COUNTRY_COUNT;
     *name = countries[index];
     *code = countryCodes[index];
 }
 
-// Rastgele doğum tarihi üretme
+// Random Birthdate generator
 char* getRandomBirthDate() {
     static char birthDate[11];
     int year = (rand() % 50) + 1970;  // 1970-2019 arası bir yıl
@@ -153,24 +148,24 @@ char* getRandomBirthDate() {
     return birthDate;
 }
 
-// Yaş hesaplama fonksiyonu
+// Age calculation function
 int calculateAge(const char *birthDate) {
     int year, month, day;
     int age;
     time_t now;
     struct tm *tm_now;
 
-    // Şu anki tarihi al
+    // Get current date
     time(&now);
     tm_now = localtime(&now);
 
-    // Doğum tarihini analiz et
+    // Analyze date of birth
     sscanf(birthDate, "%4d-%2d-%2d", &year, &month, &day);
 
-    // Yaşı hesapla
-    age = tm_now->tm_year + 1900 - year; // Yıl farkı
+    // Calculate the age
+    age = tm_now->tm_year + 1900 - year; // Year difference
     if (tm_now->tm_mon + 1 < month || (tm_now->tm_mon + 1 == month && tm_now->tm_mday < day)) {
-        age--; // Doğum günü henüz gelmemişse bir yaş küçült
+        age--; // If the birthday hasn't come yet, reduce it by one year
     }
 
     return age;
@@ -180,7 +175,7 @@ int updateAgeColumn(sqlite3 *db) {
     char *errMsg = 0;
     int rc;
 
-    // Yaş sütunu ekleme
+    // Adding an age column
     const char *sqlAddAgeColumn = "ALTER TABLE Person ADD COLUMN age INTEGER;";
     rc = sqlite3_exec(db, sqlAddAgeColumn, 0, 0, &errMsg);
     if (rc != SQLITE_OK) {
@@ -188,7 +183,7 @@ int updateAgeColumn(sqlite3 *db) {
         return rc;
     }
 
-    // Yaşları güncelleme
+    // Update ages
     const char *sqlUpdateAge = "UPDATE Person SET age = (strftime('%Y', 'now') - strftime('%Y', birth_date)) - "
                                "(strftime('%m-%d', 'now') < strftime('%m-%d', birth_date));";
     rc = sqlite3_exec(db, sqlUpdateAge, 0, 0, &errMsg);
@@ -201,9 +196,9 @@ int updateAgeColumn(sqlite3 *db) {
 }
 
 char* getRandomPhoneNumber() {
-    static char phoneNumber[15]; // Yeterli alan sağladık (12 + 1 byte NULL sonlandırıcı için)
+    static char phoneNumber[15]; 
 
-    // Operatörleri rastgele seç
+    // Randomize GSM operators
     int operatorType = rand() % 3;
     const char **selectedCodes;
     int codeCount;
@@ -227,22 +222,22 @@ char* getRandomPhoneNumber() {
             break;
     }
 
-    // Rastgele bir ön kod ve telefon numarası oluştur
+    // Generate a random prefix and phone number
     const char *code = selectedCodes[rand() % codeCount];
     snprintf(phoneNumber, sizeof(phoneNumber), "%s%07d", code, rand() % 10000000);
 
     return phoneNumber;
 }
 
-// Bu fonksiyon, rastgele verileri veritabanına ekler
+// This function inserts random data into the database
 int insertRandomData(sqlite3 *db, int personCount) {
     sqlite3_stmt *stmt;
     char *errMsg = 0;
     int rc;
 
-    srand(time(NULL)); // Rastgele sayı üreticisini başlat
+    srand(time(NULL)); // Initialize random number generator
 
-    // Rastgele ülkeleri ekleme
+    // Add random country
     for (int i = 0; i < COUNTRY_COUNT; i++) {
         const char *sqlInsertCountry = "INSERT INTO Country (name, code) VALUES (?, ?);";
         rc = sqlite3_prepare_v2(db, sqlInsertCountry, -1, &stmt, 0);
@@ -254,7 +249,7 @@ int insertRandomData(sqlite3 *db, int personCount) {
         sqlite3_finalize(stmt);
     }
 
-    // Rastgele şehirleri ekleme
+    // Add random city
     for (int i = 0; i < CITY_COUNT; i++) {
         const char *sqlInsertCity = "INSERT INTO City (name, country_id) VALUES (?, 1);"; // Türkiye'yi varsayılan olarak kullanıyoruz
         rc = sqlite3_prepare_v2(db, sqlInsertCity, -1, &stmt, 0);
@@ -265,7 +260,7 @@ int insertRandomData(sqlite3 *db, int personCount) {
         sqlite3_finalize(stmt);
     }
 
-    // Rastgele kişileri ekleme
+    // Add random people
     for (int i = 0; i < personCount; i++) {
         const char *firstName = getRandomFirstName();
         const char *lastName = getRandomLastName();
@@ -274,7 +269,7 @@ int insertRandomData(sqlite3 *db, int personCount) {
         const char *birthDate = getRandomBirthDate();
         const char *phoneNumber = getRandomPhoneNumber();
 
-        // Yaşı hesapla
+        // Calculate age
         int age = calculateAge(birthDate);
 
         const char *sqlInsertPerson = "INSERT INTO Person (first_name, last_name, birth_date, email, phone_number, age) VALUES (?, ?, ?, ?, ?, ?);";
@@ -291,7 +286,7 @@ int insertRandomData(sqlite3 *db, int personCount) {
         sqlite3_finalize(stmt);
     }
 
-    // Rastgele adresleri ekleme
+    // Adding random addresses
     for (int i = 0; i < personCount; i++) {
         const char *street = getRandomStreet();
         const char *city = getRandomCity();

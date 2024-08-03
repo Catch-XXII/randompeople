@@ -3,7 +3,7 @@
 
 #include <sqlite3.h>
 
-// Global değişkenlerin bildirilmesi
+// Declaring global variables
 extern char *firstNames[];
 extern char *lastNames[];
 extern char *streets[];
@@ -14,7 +14,7 @@ extern const char *turkTelekomCodes[];
 extern const char *turkcellCodes[];
 extern const char *vodafoneCodes[];
 
-// Fonksiyon prototipleri
+// Function prototypes
 int createTables(sqlite3 *db);
 int insertRandomData(sqlite3 *db, int personCount);
 int updateAgeColumn(sqlite3 *db);

@@ -6,21 +6,21 @@ int main() {
     sqlite3 *db;
     int rc;
 
-    // Veritabanını açma
+    // Opening the database
     rc = sqlite3_open("example.db", &db);
     if (rc) {
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
         return rc;
     }
 
-    // Tabloları oluşturma
+    // Creating tables
     rc = createTables(db);
     if (rc != SQLITE_OK) {
         fprintf(stderr, "Table creation failed\n");
         return rc;
     }
 
-    // Rastgele verileri ekleme
+    // Adding random data
     rc = insertRandomData(db, 100);
     if (rc != SQLITE_OK) {
         fprintf(stderr, "Data insertion failed\n");
@@ -29,7 +29,7 @@ int main() {
 
     printf("Data inserted successfully\n");
 
-    // Veritabanını kapatma
+    // Close the database
     sqlite3_close(db);
     return rc;
 }
