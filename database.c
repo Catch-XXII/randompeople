@@ -94,7 +94,7 @@ int insertRandomData(sqlite3 *db, int personCount) {
 
     // Add random cities
     for (int i = 0; i < CITY_COUNT; i++) {
-        const char *sqlInsertCity = "INSERT INTO City (name, country_id) VALUES (?, 1);"; // Türkiye'yi varsayılan olarak kullanıyoruz
+        const char *sqlInsertCity = "INSERT INTO City (name, country_id) VALUES (?, 1);"; // Use Turkey as default
         rc = sqlite3_prepare_v2(db, sqlInsertCity, -1, &stmt, 0);
         CHECK_ERR(rc, "Failed to prepare City insert statement");
         sqlite3_bind_text(stmt, 1, cities[i], -1, SQLITE_STATIC);
