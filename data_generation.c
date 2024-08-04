@@ -5,10 +5,10 @@
 #include "database.h"
 
 // Global variables definitions
-char *firstNames[] = {"Ahmet", "Mehmet", "Ayşe", "Fatma", "Ali", "Hasan", "Hüseyin", "Zeynep", "Emine", "Mustafa"};
-char *lastNames[] = {"Yılmaz", "Kaya", "Demir", "Şahin", "Çelik", "Öztürk", "Arslan", "Doğan", "Korkmaz", "Özdemir"};
+char *firstNames[] = {"Ahmet", "Mehmet", "Ayşe", "Fatma", "Ali", "Hasan", "Hüseyin", "Zeynep", "Emine", "Mustafa", "İlyas"};
+char *lastNames[] = {"Yılmaz", "Kaya", "Demir", "Şahin", "Çelik", "Öztürk", "Arslan", "Doğan", "Korkmaz", "Özdemir", "Özkurt"};
 char *streets[] = {"Atatürk Cad.", "Cumhuriyet Cad.", "İstiklal Cad.", "Bağdat Cad.", "Barbaros Bulv."};
-char *cities[] = {"İstanbul", "Ankara", "İzmir", "Bursa", "Antalya"};
+char *cities[] = {"İstanbul", "Ankara", "İzmir", "Bursa", "Antalya", "Sakarya"};
 char *countries[] = {"Türkiye", "ABD", "Almanya", "Fransa", "İngiltere"};
 char *countryCodes[] = {"TR", "US", "DE", "FR", "UK"};
 const char *turkTelekomCodes[] = {"501", "505", "506", "507", "551", "552", "553", "554", "555", "559"};
